@@ -395,10 +395,6 @@ export default function AdminDashboard() {
 
               <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImagePick} />
 
-              <button className="btn-ghost" style={{ width: '100%', padding: '11px', fontSize: '13px' }} onClick={() => fileRef.current?.click()}>
-                <Upload size={14} /> {imageFile ? 'Change Image' : 'Select Image'}
-              </button>
-
               <div style={{ marginTop: '14px' }}>
                 {label('Or paste image URL')}
                 <input

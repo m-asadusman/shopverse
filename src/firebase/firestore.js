@@ -72,9 +72,15 @@ export const saveOrder = async (uid, orderData) => {
 };
 
 export const fetchUserOrders = async (uid) => {
-  const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
-  const snap = await getDocs(q);
+  // No orderBy here — avoids needing a Firestore composite index.
+  // We filter by uid client-side and sort by createdAt manually.
+  const snap = await getDocs(collection(db, 'orders'));
   return snap.docs
     .map(d => ({ id: d.id, ...d.data() }))
-    .filter(o => o.uid === uid);
+    .filter(o => o.uid === uid)
+    .sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() ?? 0;
+      const bTime = b.createdAt?.toMillis?.() ?? 0;
+      return bTime - aTime; // newest first
+    });
 };

@@ -74,22 +74,20 @@ export default function Navbar() {
           {/* Auth */}
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {/* Avatar — only show for non-admin (admin already has the Admin nav link) */}
-              {!isAdmin && (
-                <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
-                >
-                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--bg-card)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Syne' }}>
-                      {user.email?.[0]?.toUpperCase()}
-                    </span>
-                  </div>
-                  <span style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {user.displayName || user.email?.split('@')[0]}
+              <Link to={isAdmin ? '/admin' : '/profile'} style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
+              >
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: isAdmin ? 'var(--accent)' : 'var(--bg-card)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: isAdmin ? '#080b0f' : 'var(--text-primary)', fontFamily: 'Syne' }}>
+                    {user.email?.[0]?.toUpperCase()}
                   </span>
-                </Link>
-              )}
+                </div>
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user.displayName || user.email?.split('@')[0]}
+                </span>
+                {isAdmin && <ShieldCheck size={12} color="var(--accent)" />}
+              </Link>
               <button onClick={handleLogout} className="qty-btn" title="Logout" style={{ width: '36px', height: '36px' }}>
                 <LogOut size={15} />
               </button>
