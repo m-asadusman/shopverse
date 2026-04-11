@@ -70,15 +70,12 @@ export default function Checkout() {
         </div>
         <div className="animate-fade-in">
           <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '8px' }}>Order Placed!</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '16px', marginBottom: '8px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '16px', marginBottom: '28px' }}>
             Thank you, {user?.displayName || user?.email?.split('@')[0]}!
-          </p>
-          <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '28px' }}>
-            Your order has been confirmed. A confirmation will be sent to {user?.email}.
           </p>
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="btn-accent" onClick={() => navigate('/')}>Continue Shopping</button>
-            <button className="btn-ghost" onClick={() => navigate('/profile')}>View Profile</button>
+            <button className="btn-ghost" onClick={() => navigate('/profile')}>View Orders</button>
           </div>
         </div>
       </div>

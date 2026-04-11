@@ -7,7 +7,6 @@ import { logout } from '../redux/slices/authSlice';
 import { fetchUserOrders } from '../firebase/firestore';
 import { selectCartItems, selectCartTotal } from '../redux/slices/cartSlice';
 import { LogOut, ShoppingBag, User, Mail, Calendar, Package, ArrowRight, ShoppingCart, Loader2 } from 'lucide-react';
-
 const STATUS_COLORS = {
   Processing: '#f59e0b',
   Shipped: '#3b82f6',
@@ -18,7 +17,12 @@ const STATUS_COLORS = {
 export default function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector(state => state.auth);
+  const { user, role } = useSelector(state => state.auth);
+
+  // Admins don't have a profile page — redirect to dashboard
+  useEffect(() => {
+    if (role === 'admin') navigate('/admin', { replace: true });
+  }, [role, navigate]);
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
 

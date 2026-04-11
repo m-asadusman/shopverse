@@ -85,3 +85,50 @@ export const fetchUserOrders = async (uid) => {
     .map(d => ({ id: d.id, ...d.data() }))
     .filter(o => o.uid === uid);
 };
+
+// ─── Reviews ───────────────────────────────────────────────────────────────
+
+export const fetchProductReviews = async (productId) => {
+  const q = query(
+    collection(db, 'reviews'),
+    orderBy('createdAt', 'desc')
+  );
+  const snap = await getDocs(q);
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .filter(r => r.productId === productId);
+};
+
+export const submitReview = async ({ productId, uid, displayName, rating, comment }) => {
+  // Save the review
+  await addDoc(collection(db, 'reviews'), {
+    productId,
+    uid,
+    displayName,
+    rating,
+    comment,
+    createdAt: serverTimestamp(),
+  });
+
+  // Recalculate product rating + review count
+  const allReviews = await fetchProductReviews(productId);
+  const newCount = allReviews.length;
+  const newRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / newCount;
+
+  await updateDoc(doc(db, 'products', productId), {
+    rating: Math.round(newRating * 10) / 10,
+    reviews: newCount,
+  });
+};
+
+export const hasUserReviewedProduct = async (uid, productId) => {
+  const reviews = await fetchProductReviews(productId);
+  return reviews.some(r => r.uid === uid);
+};
+
+export const hasUserPurchasedProduct = async (uid, productId) => {
+  const orders = await fetchUserOrders(uid);
+  return orders.some(order =>
+    order.items?.some(item => String(item.id) === String(productId))
+  );
+};

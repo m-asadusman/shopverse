@@ -28,7 +28,7 @@ export default function Navbar() {
       borderBottom: '1px solid var(--border)',
     }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-
+        {/* Logo */}
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '30px', height: '30px', background: 'var(--accent)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Zap size={16} color="#080b0f" fill="#080b0f" />
@@ -38,10 +38,10 @@ export default function Navbar() {
           </span>
         </Link>
 
-
+        {/* Desktop Nav Links */}
         <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Home</NavLink>
-          {user && <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Profile</NavLink>}
+          {user && role !== 'admin' && <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Profile</NavLink>}
           {role === 'admin' && (
             <NavLink to="/admin" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -51,9 +51,9 @@ export default function Navbar() {
           )}
         </div>
 
-
+        {/* Right actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-
+          {/* Cart */}
           <Link to="/cart" style={{ position: 'relative', padding: '8px', display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'var(--text-secondary)', transition: 'color 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
             onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
@@ -66,10 +66,10 @@ export default function Navbar() {
             )}
           </Link>
 
-
+          {/* Auth */}
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', transition: 'all 0.2s' }}
+              <Link to={role === 'admin' ? '/admin' : '/profile'} style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
               >
@@ -94,7 +94,7 @@ export default function Navbar() {
             </div>
           )}
 
-
+          {/* Mobile menu toggle */}
           <button
             className="qty-btn"
             style={{ display: 'none', width: '36px', height: '36px' }}
@@ -106,11 +106,11 @@ export default function Navbar() {
         </div>
       </div>
 
-
+      {/* Mobile menu */}
       {mobileOpen && (
         <div style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border)', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Home</NavLink>
-          {user && <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Profile</NavLink>}
+          {user && role !== 'admin' && <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Profile</NavLink>}
           {role === 'admin' && <NavLink to="/admin" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Admin</NavLink>}
           <NavLink to="/cart" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Cart ({cartCount})</NavLink>
         </div>
