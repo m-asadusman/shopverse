@@ -30,7 +30,6 @@ export default function Navbar() {
     }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-        {/* Logo */}
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '30px', height: '30px', background: 'var(--accent)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Zap size={16} color="#080b0f" fill="#080b0f" />
@@ -40,7 +39,6 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Nav Links */}
         <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Home</NavLink>
           {user && !isAdmin && <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Profile</NavLink>}
@@ -53,10 +51,8 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Right actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
-          {/* Cart — hidden for admin */}
           {!isAdmin && (
             <Link to="/cart" style={{ position: 'relative', padding: '8px', display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'var(--text-secondary)', transition: 'color 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
@@ -71,7 +67,6 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* Auth */}
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Link to={isAdmin ? '/admin' : '/profile'} style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', transition: 'all 0.2s' }}
@@ -99,7 +94,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile menu toggle */}
           <button
             className="qty-btn"
             style={{ display: 'none', width: '36px', height: '36px' }}
@@ -111,7 +105,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border)', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Home</NavLink>

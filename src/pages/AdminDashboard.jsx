@@ -93,7 +93,7 @@ export default function AdminDashboard() {
     try {
       let imageUrl = form.image;
 
-      // Upload new image to Cloudinary if one was selected
+      
       if (imageFile) {
         setUploading(true);
         imageUrl = await uploadToCloudinary(imageFile);
@@ -119,7 +119,6 @@ export default function AdminDashboard() {
         showToast('Product added successfully!');
       }
 
-      // Refresh products list in Redux
       const updated = await fetchProducts();
       dispatch(setItems(updated));
       setView('list');
@@ -151,7 +150,6 @@ export default function AdminDashboard() {
     p.category?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ─── Styles ───────────────────────────────────────────────────────────────
   const label = (text) => (
     <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', fontFamily: 'Syne', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '6px' }}>
       {text}
@@ -161,7 +159,6 @@ export default function AdminDashboard() {
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '36px 24px', minHeight: '80vh' }}>
 
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
@@ -183,7 +180,6 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Stats row */}
       {view === 'list' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '14px', marginBottom: '28px' }}>
           {STAT_CARDS(products).map(({ label: lbl, value, icon: Icon, color }) => (
@@ -200,10 +196,10 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ── LIST VIEW ─────────────────────────────────────────────────────── */}
+
       {view === 'list' && (
         <>
-          {/* Search bar */}
+
           <div style={{ position: 'relative', maxWidth: '360px', marginBottom: '20px' }}>
             <Search size={15} style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input
@@ -227,14 +223,14 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="glass-card" style={{ overflow: 'hidden' }}>
-              {/* Table header */}
+
               <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 100px 90px 80px 120px', gap: '12px', padding: '12px 20px', borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
                 {['Image', 'Product', 'Category', 'Price', 'Stock', 'Actions'].map(h => (
                   <span key={h} style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', fontFamily: 'Syne', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</span>
                 ))}
               </div>
 
-              {/* Table rows */}
+
               {filtered.map((product, i) => (
                 <div
                   key={product.id}
@@ -292,7 +288,7 @@ export default function AdminDashboard() {
         </>
       )}
 
-      {/* ── FORM VIEW ─────────────────────────────────────────────────────── */}
+
       {view === 'form' && (
         <div className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'start' }}>
 
@@ -359,14 +355,14 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Right — image upload + actions */}
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div className="glass-card" style={{ padding: '24px' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 800, fontFamily: 'Syne', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Image size={16} color="var(--accent)" /> Product Image
               </h2>
 
-              {/* Preview */}
+
               {imagePreview ? (
                 <div style={{ position: 'relative', marginBottom: '14px' }}>
                   <img src={imagePreview} alt="Preview" style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', borderRadius: '12px', border: '1px solid var(--border)' }} />
@@ -406,7 +402,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Save / Cancel */}
+
             <div className="glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <button
                 className="btn-accent"
@@ -431,7 +427,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ── Delete Confirm Modal ───────────────────────────────────────────── */}
+
       {confirmDelete && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '24px' }}>
           <div className="glass-card animate-pop-in" style={{ padding: '28px', maxWidth: '380px', width: '100%', textAlign: 'center' }}>
@@ -457,7 +453,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ── Toast ─────────────────────────────────────────────────────────── */}
+
       {toast && (
         <div className="animate-slide-in" style={{
           position: 'fixed', bottom: '24px', right: '24px',

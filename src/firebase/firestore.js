@@ -13,8 +13,6 @@ import {
 } from 'firebase/firestore';
 import { db } from './config';
 
-// ─── Products ──────────────────────────────────────────────────────────────
-
 export const fetchProducts = async () => {
   const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
   const snap = await getDocs(q);
@@ -40,8 +38,6 @@ export const deleteProduct = async (id) => {
   await deleteDoc(doc(db, 'products', id));
 };
 
-// ─── Users ─────────────────────────────────────────────────────────────────
-
 export const createUserDoc = async ({ uid, email, displayName }) => {
   const ref = doc(db, 'users', uid);
   const snap = await getDoc(ref);
@@ -61,7 +57,6 @@ export const getUserRole = async (uid) => {
   return snap.data().role || null;
 };
 
-// ─── Orders ────────────────────────────────────────────────────────────────
 
 export const saveOrder = async (uid, orderData) => {
   await addDoc(collection(db, 'orders'), {
@@ -72,8 +67,7 @@ export const saveOrder = async (uid, orderData) => {
 };
 
 export const fetchUserOrders = async (uid) => {
-  // No orderBy here — avoids needing a Firestore composite index.
-  // We filter by uid client-side and sort by createdAt manually.
+
   const snap = await getDocs(collection(db, 'orders'));
   return snap.docs
     .map(d => ({ id: d.id, ...d.data() }))
@@ -81,6 +75,6 @@ export const fetchUserOrders = async (uid) => {
     .sort((a, b) => {
       const aTime = a.createdAt?.toMillis?.() ?? 0;
       const bTime = b.createdAt?.toMillis?.() ?? 0;
-      return bTime - aTime; // newest first
+      return bTime - aTime; 
     });
 };
