@@ -7,6 +7,8 @@ import { useState } from 'react';
 export default function ProductCard({ product, onAddToCart }) {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
+  const { role } = useSelector(state => state.auth);
+  const isAdmin = role === 'admin';
   const inCart = cartItems.some(i => String(i.id) === String(product.id));
   const [added, setAdded] = useState(false);
 
@@ -58,14 +60,16 @@ export default function ProductCard({ product, onAddToCart }) {
             <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '18px', color: 'var(--text-primary)' }}>
               ${parseFloat(product.price).toFixed(2)}
             </span>
-            <button
-              className="btn-accent"
-              onClick={handleAdd}
-              style={{ padding: '9px 14px', fontSize: '13px', borderRadius: '9px' }}
-            >
-              {added ? <Check size={14} /> : <ShoppingCart size={14} />}
-              {added ? 'Added!' : inCart ? 'Add More' : 'Add'}
-            </button>
+            {!isAdmin && (
+              <button
+                className="btn-accent"
+                onClick={handleAdd}
+                style={{ padding: '9px 14px', fontSize: '13px', borderRadius: '9px' }}
+              >
+                {added ? <Check size={14} /> : <ShoppingCart size={14} />}
+                {added ? 'Added!' : inCart ? 'Add More' : 'Add'}
+              </button>
+            )}
           </div>
         </div>
       </div>

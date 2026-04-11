@@ -13,6 +13,8 @@ export default function ProductDetail() {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
   const { items: products } = useSelector(state => state.products);
+  const { role } = useSelector(state => state.auth);
+  const isAdmin = role === 'admin';
   const { toast, showToast } = useToast();
   const [added, setAdded] = useState(false);
 
@@ -108,13 +110,17 @@ export default function ProductDetail() {
               ${parseFloat(product.price).toFixed(2)}
             </div>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button className="btn-accent" onClick={handleAddToCart} style={{ flex: 1, minWidth: '160px', padding: '14px 24px', fontSize: '15px' }}>
-                {added ? <Check size={16} /> : <ShoppingCart size={16} />}
-                {added ? 'Added to Cart!' : inCart ? 'Add More to Cart' : 'Add to Cart'}
-              </button>
-              <button className="btn-ghost" onClick={() => { dispatch(addToCart(product)); navigate('/cart'); }} style={{ padding: '14px 20px' }}>
-                <Zap size={15} /> Buy Now
-              </button>
+              {!isAdmin && (
+                <>
+                  <button className="btn-accent" onClick={handleAddToCart} style={{ flex: 1, minWidth: '160px', padding: '14px 24px', fontSize: '15px' }}>
+                    {added ? <Check size={16} /> : <ShoppingCart size={16} />}
+                    {added ? 'Added to Cart!' : inCart ? 'Add More to Cart' : 'Add to Cart'}
+                  </button>
+                  <button className="btn-ghost" onClick={() => { dispatch(addToCart(product)); navigate('/cart'); }} style={{ padding: '14px 20px' }}>
+                    <Zap size={15} /> Buy Now
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
