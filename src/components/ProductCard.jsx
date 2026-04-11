@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { ShoppingCart, Star, Check, Zap } from 'lucide-react';
+import { ShoppingCart, Check } from 'lucide-react';
 import { addToCart, selectCartItems } from '../redux/slices/cartSlice';
 import { useState } from 'react';
 
@@ -53,20 +53,10 @@ export default function ProductCard({ product, onAddToCart }) {
             </h3>
           </div>
 
-          {/* Rating */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ display: 'flex', gap: '2px' }}>
-              {[1,2,3,4,5].map(s => (
-                <Star key={s} size={12} fill={s <= Math.round(product.rating) ? 'var(--accent)' : 'none'} color={s <= Math.round(product.rating) ? 'var(--accent)' : 'var(--text-muted)'} />
-              ))}
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{product.rating} ({product.reviews})</span>
-          </div>
-
           {/* Price + CTA */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '8px' }}>
             <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '18px', color: 'var(--text-primary)' }}>
-              ${product.price.toFixed(2)}
+              ${parseFloat(product.price).toFixed(2)}
             </span>
             <button
               className="btn-accent"

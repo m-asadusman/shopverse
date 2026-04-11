@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Plus, Pencil, Trash2, Upload, X, Check, Search,
-  Package, Tag, DollarSign, Star, Layers, AlignLeft,
+  Package, Tag, DollarSign, Layers, AlignLeft,
   Image, Loader2, ShieldCheck, ChevronDown, BarChart2,
   ShoppingBag, Users, TrendingUp,
 } from 'lucide-react';
@@ -22,7 +22,6 @@ const STAT_CARDS = (products) => [
   { label: 'Total Products', value: products.length, icon: Package, color: 'var(--accent)' },
   { label: 'Categories', value: new Set(products.map(p => p.category)).size, icon: Layers, color: '#a78bfa' },
   { label: 'Low Stock', value: products.filter(p => p.stock <= 10).length, icon: TrendingUp, color: 'var(--red)' },
-  { label: 'Avg Rating', value: products.length ? (products.reduce((s, p) => s + (parseFloat(p.rating) || 0), 0) / products.length).toFixed(1) : '—', icon: Star, color: '#f59e0b' },
 ];
 
 export default function AdminDashboard() {
@@ -229,8 +228,8 @@ export default function AdminDashboard() {
           ) : (
             <div className="glass-card" style={{ overflow: 'hidden' }}>
               {/* Table header */}
-              <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 100px 90px 80px 80px 120px', gap: '12px', padding: '12px 20px', borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
-                {['Image', 'Product', 'Category', 'Price', 'Stock', 'Rating', 'Actions'].map(h => (
+              <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 100px 90px 80px 120px', gap: '12px', padding: '12px 20px', borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
+                {['Image', 'Product', 'Category', 'Price', 'Stock', 'Actions'].map(h => (
                   <span key={h} style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', fontFamily: 'Syne', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</span>
                 ))}
               </div>
@@ -240,7 +239,7 @@ export default function AdminDashboard() {
                 <div
                   key={product.id}
                   style={{
-                    display: 'grid', gridTemplateColumns: '60px 1fr 100px 90px 80px 80px 120px',
+                    display: 'grid', gridTemplateColumns: '60px 1fr 100px 90px 80px 120px',
                     gap: '12px', padding: '14px 20px', alignItems: 'center',
                     borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none',
                     transition: 'background 0.15s',
@@ -262,11 +261,6 @@ export default function AdminDashboard() {
                   <span style={{ fontSize: '13px', color: product.stock <= 10 ? 'var(--red)' : 'var(--green)', fontWeight: 600 }}>
                     {product.stock}
                   </span>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Star size={12} fill="var(--accent)" color="var(--accent)" />
-                    <span style={{ fontSize: '13px', fontWeight: 600 }}>{product.rating}</span>
-                  </div>
 
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button
