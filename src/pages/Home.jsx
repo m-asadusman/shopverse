@@ -4,7 +4,7 @@ import { Search, SlidersHorizontal, ChevronDown, Zap, Shield, Truck, RotateCcw }
 import ProductCard from '../components/ProductCard';
 import SkeletonCard from '../components/SkeletonCard';
 import Toast from '../components/Toast';
-import { setCategory, setSearch, setSortBy } from '../redux/slices/productsSlice';
+import { setCategory, setSearch, setSortBy, loadProducts } from '../redux/slices/productsSlice';
 import { categories } from '../data/products';
 import { useToast } from '../hooks/useToast';
 
@@ -29,13 +29,12 @@ export default function Home() {
   const { toast, showToast } = useToast();
 
   useEffect(() => {
-    const t = setTimeout(() => setPageLoading(false), 900);
-    return () => clearTimeout(t);
-  }, []);
+    dispatch(loadProducts()).finally(() => setPageLoading(false));
+  }, [dispatch]);
 
   return (
     <div style={{ minHeight: '100vh' }}>
-      {/* Hero */}
+
       <section style={{
         padding: '80px 24px 60px',
         background: 'linear-gradient(180deg, rgba(232,255,71,0.04) 0%, transparent 100%)',
@@ -60,7 +59,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Perks bar */}
+
       <section style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '16px 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0' }}>
           {PERKS.map(({ icon: Icon, label, sub }) => (
@@ -77,12 +76,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Products section */}
+
       <section id="products" style={{ maxWidth: '1280px', margin: '0 auto', padding: '48px 24px' }}>
-        {/* Filters */}
+
         <div style={{ marginBottom: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-            {/* Search */}
+
             <div style={{ position: 'relative', flex: '1', minWidth: '200px', maxWidth: '360px' }}>
               <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
@@ -94,7 +93,7 @@ export default function Home() {
               />
             </div>
 
-            {/* Sort */}
+
             <div style={{ position: 'relative' }}>
               <SlidersHorizontal size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
               <ChevronDown size={12} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
@@ -113,7 +112,7 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Category chips */}
+
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {categories.map(cat => (
               <button
@@ -138,7 +137,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Grid */}
+
         {pageLoading ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
             {Array(8).fill(0).map((_, i) => <SkeletonCard key={i} />)}

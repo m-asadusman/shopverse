@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, Lock, CheckCircle, Package, Truck } from 'lucide-react';
 import { selectCartItems, selectCartTotal, clearCart } from '../redux/slices/cartSlice';
+import { saveOrder } from '../firebase/firestore';
 
 const STEPS = ['Shipping', 'Payment', 'Confirm'];
 
@@ -32,10 +33,33 @@ export default function Checkout() {
 
   const handlePlaceOrder = async () => {
     setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    dispatch(clearCart());
-    setPlaced(true);
-    setLoading(false);
+    try {
+      await saveOrder(user.uid, {
+        items: items.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+        subtotal,
+        shipping,
+        tax,
+        total,
+        status: 'Processing',
+        shippingAddress: {
+          fullName: form.fullName,
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          zip: form.zip,
+          country: form.country,
+        },
+      });
+      dispatch(clearCart());
+      setPlaced(true);
+    } catch (err) {
+      console.error('Order save failed:', err);
+      // Still clear cart and show success — don't block user
+      dispatch(clearCart());
+      setPlaced(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (placed) {

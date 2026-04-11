@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { ShoppingCart, User, LogOut, Zap, Menu, X } from 'lucide-react';
+import { ShoppingCart, LogOut, Zap, Menu, X, ShieldCheck } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { logout } from '../redux/slices/authSlice';
@@ -11,17 +11,13 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cartCount = useSelector(selectCartCount);
-  const { user } = useSelector(state => state.auth);
+  const { user, role } = useSelector(state => state.auth);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      dispatch(logout());
-      navigate('/login');
-    } catch (e) {
-      console.error(e);
-    }
+    await signOut(auth);
+    dispatch(logout());
+    navigate('/login');
   };
 
   return (
@@ -32,7 +28,7 @@ export default function Navbar() {
       borderBottom: '1px solid var(--border)',
     }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {/* Logo */}
+
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '30px', height: '30px', background: 'var(--accent)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Zap size={16} color="#080b0f" fill="#080b0f" />
@@ -42,15 +38,22 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Nav Links */}
+
         <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Home</NavLink>
           {user && <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Profile</NavLink>}
+          {role === 'admin' && (
+            <NavLink to="/admin" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <ShieldCheck size={13} color="var(--accent)" /> Admin
+              </span>
+            </NavLink>
+          )}
         </div>
 
-        {/* Right actions */}
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* Cart */}
+
           <Link to="/cart" style={{ position: 'relative', padding: '8px', display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'var(--text-secondary)', transition: 'color 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
             onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
@@ -63,21 +66,22 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Auth */}
+
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', padding: '6px 12px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-hover)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
               >
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#080b0f', fontFamily: 'Syne' }}>
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: role === 'admin' ? 'var(--accent)' : 'var(--bg-card)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: role === 'admin' ? '#080b0f' : 'var(--text-primary)', fontFamily: 'Syne' }}>
                     {user.email?.[0]?.toUpperCase()}
                   </span>
                 </div>
                 <span style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user.displayName || user.email?.split('@')[0]}
                 </span>
+                {role === 'admin' && <ShieldCheck size={12} color="var(--accent)" />}
               </Link>
               <button onClick={handleLogout} className="qty-btn" title="Logout" style={{ width: '36px', height: '36px' }}>
                 <LogOut size={15} />
@@ -90,7 +94,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile menu toggle */}
+
           <button
             className="qty-btn"
             style={{ display: 'none', width: '36px', height: '36px' }}
@@ -102,11 +106,12 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+
       {mobileOpen && (
         <div style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border)', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Home</NavLink>
           {user && <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Profile</NavLink>}
+          {role === 'admin' && <NavLink to="/admin" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Admin</NavLink>}
           <NavLink to="/cart" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMobileOpen(false)}>Cart ({cartCount})</NavLink>
         </div>
       )}

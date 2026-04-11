@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../firebase/config';
-import { setUser } from '../redux/slices/authSlice';
+import { setUser, setRole } from '../redux/slices/authSlice';
+import { createUserDoc } from '../firebase/firestore';
 import { Eye, EyeOff, Zap, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function Signup() {
@@ -31,11 +32,12 @@ export default function Signup() {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: name });
-      dispatch(setUser({
-        uid: cred.user.uid,
-        email: cred.user.email,
-        displayName: name,
-      }));
+
+      // Write user document to Firestore with default role: 'user'
+      await createUserDoc({ uid: cred.user.uid, email, displayName: name });
+
+      dispatch(setUser({ uid: cred.user.uid, email, displayName: name }));
+      dispatch(setRole('user'));
       navigate('/');
     } catch (err) {
       const msg = err.code === 'auth/email-already-in-use' ? 'An account with this email already exists.'
@@ -51,7 +53,6 @@ export default function Signup() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(232,255,71,0.05) 0%, transparent 70%)' }}>
       <div className="animate-fade-in" style={{ width: '100%', maxWidth: '420px' }}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <div style={{ width: '36px', height: '36px', background: 'var(--accent)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -99,7 +100,6 @@ export default function Signup() {
                   {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
-              {/* Password strength */}
               {password && (
                 <div style={{ marginTop: '8px' }}>
                   <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
@@ -116,13 +116,14 @@ export default function Signup() {
               <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'Syne', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Confirm Password</label>
               <div style={{ position: 'relative' }}>
                 <Lock size={15} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                <input className="input-field" style={{ paddingLeft: '42px', paddingRight: '44px', borderColor: confirm && password !== confirm ? 'rgba(255,71,87,0.5)' : confirm && password === confirm ? 'rgba(46,204,113,0.4)' : undefined }} type={showPw ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Re-enter password" required />
+                <input
+                  className="input-field"
+                  style={{ paddingLeft: '42px', paddingRight: '44px', borderColor: confirm && password !== confirm ? 'rgba(255,71,87,0.5)' : confirm && password === confirm ? 'rgba(46,204,113,0.4)' : undefined }}
+                  type={showPw ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Re-enter password" required
+                />
                 {confirm && (
                   <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)' }}>
-                    {password === confirm
-                      ? <CheckCircle size={15} color="var(--green)" />
-                      : <AlertCircle size={15} color="var(--red)" />
-                    }
+                    {password === confirm ? <CheckCircle size={15} color="var(--green)" /> : <AlertCircle size={15} color="var(--red)" />}
                   </div>
                 )}
               </div>

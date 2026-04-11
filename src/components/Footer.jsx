@@ -6,7 +6,7 @@ export default function Footer() {
     <footer style={{ borderTop: '1px solid var(--border)', marginTop: '80px', padding: '48px 24px 32px' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '40px', marginBottom: '40px' }}>
-          {/* Brand */}
+
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <div style={{ width: '26px', height: '26px', background: 'var(--accent)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -21,7 +21,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links */}
+
           <div>
             <h4 style={{ fontFamily: 'Syne', fontSize: '13px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '12px' }}>Shop</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

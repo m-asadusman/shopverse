@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/config';
-import { setUser, setError, clearError } from '../redux/slices/authSlice';
+import { setUser, setRole } from '../redux/slices/authSlice';
+import { createUserDoc, getUserRole } from '../firebase/firestore';
 import { Eye, EyeOff, Zap, Mail, Lock, AlertCircle } from 'lucide-react';
 
 export default function Login() {
@@ -24,11 +25,16 @@ export default function Login() {
     setLoading(true);
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
-      dispatch(setUser({
-        uid: cred.user.uid,
-        email: cred.user.email,
-        displayName: cred.user.displayName,
-      }));
+      const { uid, email: userEmail, displayName } = cred.user;
+
+      // Ensure user document exists in Firestore
+      await createUserDoc({ uid, email: userEmail, displayName });
+
+      // Fetch role
+      const role = await getUserRole(uid);
+
+      dispatch(setUser({ uid, email: userEmail, displayName }));
+      dispatch(setRole(role));
       navigate(from, { replace: true });
     } catch (err) {
       const msg = err.code === 'auth/user-not-found' ? 'No account found with this email.'
@@ -45,7 +51,6 @@ export default function Login() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(232,255,71,0.05) 0%, transparent 70%)' }}>
       <div className="animate-fade-in" style={{ width: '100%', maxWidth: '420px' }}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <div style={{ width: '36px', height: '36px', background: 'var(--accent)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -43,11 +43,11 @@ export default function Cart() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', alignItems: 'start' }}>
-        {/* Items */}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', gridColumn: 'span 2' }}>
           {items.map(item => (
             <div key={item.id} className="glass-card animate-fade-in" style={{ padding: '16px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-              {/* Image */}
+
               <Link to={`/product/${item.id}`}>
                 <img src={item.image} alt={item.name} style={{ width: '80px', height: '80px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--border)', transition: 'opacity 0.2s' }}
                   onMouseEnter={e => e.target.style.opacity = '0.8'}
@@ -55,7 +55,7 @@ export default function Cart() {
                 />
               </Link>
 
-              {/* Details */}
+
               <div style={{ flex: 1, minWidth: '160px' }}>
                 <Link to={`/product/${item.id}`} style={{ textDecoration: 'none' }}>
                   <div style={{ fontSize: '10px', color: 'var(--accent)', fontWeight: 700, fontFamily: 'Syne', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.category}</div>
@@ -67,7 +67,7 @@ export default function Cart() {
                 <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>${item.price.toFixed(2)} each</div>
               </div>
 
-              {/* Qty control */}
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <button className="qty-btn" onClick={() => dispatch(decreaseQuantity(item.id))}>
                   <Minus size={13} />
@@ -78,12 +78,12 @@ export default function Cart() {
                 </button>
               </div>
 
-              {/* Subtotal */}
+
               <div style={{ minWidth: '90px', textAlign: 'right' }}>
                 <div style={{ fontSize: '16px', fontWeight: 800, fontFamily: 'Syne' }}>${(item.price * item.quantity).toFixed(2)}</div>
               </div>
 
-              {/* Remove */}
+
               <button onClick={() => dispatch(removeFromCart(item.id))} className="qty-btn" style={{ color: 'var(--text-muted)' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,71,87,0.4)'; e.currentTarget.style.color = 'var(--red)'; e.currentTarget.style.background = 'rgba(255,71,87,0.08)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'var(--bg-elevated)'; }}
@@ -94,7 +94,7 @@ export default function Cart() {
           ))}
         </div>
 
-        {/* Order Summary */}
+
         <div className="glass-card" style={{ padding: '24px', position: 'sticky', top: '80px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '20px', fontFamily: 'Syne' }}>Order Summary</h2>
 

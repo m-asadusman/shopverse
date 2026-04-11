@@ -7,7 +7,7 @@ import { useState } from 'react';
 export default function ProductCard({ product, onAddToCart }) {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
-  const inCart = cartItems.some(i => i.id === product.id);
+  const inCart = cartItems.some(i => String(i.id) === String(product.id));
   const [added, setAdded] = useState(false);
 
   const handleAdd = (e) => {

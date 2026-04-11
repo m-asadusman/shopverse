@@ -2,7 +2,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ShoppingCart, ArrowLeft, Star, Check, Package, Zap, ChevronRight } from 'lucide-react';
 import { addToCart, selectCartItems } from '../redux/slices/cartSlice';
-import { products } from '../data/products';
 import Toast from '../components/Toast';
 import ProductCard from '../components/ProductCard';
 import { useToast } from '../hooks/useToast';
@@ -13,12 +12,14 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
+  const { items: products } = useSelector(state => state.products);
   const { toast, showToast } = useToast();
   const [added, setAdded] = useState(false);
 
-  const product = products.find(p => p.id === parseInt(id));
-  const related = products.filter(p => p.id !== product?.id && p.category === product?.category).slice(0, 4);
-  const inCart = cartItems.some(i => i.id === product?.id);
+  // Support both Firestore string IDs and mock numeric IDs
+  const product = products.find(p => String(p.id) === String(id));
+  const related = products.filter(p => String(p.id) !== String(id) && p.category === product?.category).slice(0, 4);
+  const inCart = cartItems.some(i => String(i.id) === String(id));
 
   if (!product) {
     return (
@@ -75,35 +76,39 @@ export default function ProductDetail() {
             </h1>
           </div>
 
-          {/* Rating */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ display: 'flex', gap: '3px' }}>
-              {[1,2,3,4,5].map(s => (
-                <Star key={s} size={16} fill={s <= Math.round(product.rating) ? 'var(--accent)' : 'none'} color={s <= Math.round(product.rating) ? 'var(--accent)' : 'var(--text-muted)'} />
-              ))}
+          {/* Rating — only show if it has reviews */}
+          {product.reviews > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '3px' }}>
+                {[1,2,3,4,5].map(s => (
+                  <Star key={s} size={16} fill={s <= Math.round(product.rating) ? 'var(--accent)' : 'none'} color={s <= Math.round(product.rating) ? 'var(--accent)' : 'var(--text-muted)'} />
+                ))}
+              </div>
+              <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{product.rating}</span>
+              <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>({product.reviews} reviews)</span>
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{product.rating}</span>
-            <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>({product.reviews} reviews)</span>
-          </div>
+          )}
 
           <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>{product.description}</p>
 
           {/* Features */}
-          <div>
-            <h3 style={{ fontSize: '13px', fontFamily: 'Syne', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '12px' }}>
-              Key Features
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {product.features.map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-dim)', border: '1px solid rgba(232,255,71,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Check size={11} color="var(--accent)" />
+          {product.features?.length > 0 && (
+            <div>
+              <h3 style={{ fontSize: '13px', fontFamily: 'Syne', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                Key Features
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {product.features.map((f, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-dim)', border: '1px solid rgba(232,255,71,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Check size={11} color="var(--accent)" />
+                    </div>
+                    <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{f}</span>
                   </div>
-                  <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{f}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Stock */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '9px', background: product.stock > 10 ? 'rgba(46,204,113,0.08)' : 'rgba(255,71,87,0.08)', border: `1px solid ${product.stock > 10 ? 'rgba(46,204,113,0.2)' : 'rgba(255,71,87,0.2)'}` }}>
@@ -116,7 +121,7 @@ export default function ProductDetail() {
           {/* Price + CTA */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ fontSize: '36px', fontFamily: 'Syne', fontWeight: 800, letterSpacing: '-0.02em' }}>
-              ${product.price.toFixed(2)}
+              ${parseFloat(product.price).toFixed(2)}
             </div>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <button className="btn-accent" onClick={handleAddToCart} style={{ flex: 1, minWidth: '160px', padding: '14px 24px', fontSize: '15px' }}>

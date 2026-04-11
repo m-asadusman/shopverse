@@ -1,17 +1,19 @@
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { logout } from '../redux/slices/authSlice';
+import { fetchUserOrders } from '../firebase/firestore';
 import { selectCartItems, selectCartTotal } from '../redux/slices/cartSlice';
-import { LogOut, ShoppingBag, User, Mail, Calendar, Package, ArrowRight, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { LogOut, ShoppingBag, User, Mail, Calendar, Package, ArrowRight, ShoppingCart, Loader2 } from 'lucide-react';
 
-const ORDER_HISTORY = [
-  { id: 'ORD-7821', date: 'Mar 15, 2025', total: 429.98, status: 'Delivered', items: 2 },
-  { id: 'ORD-6543', date: 'Feb 28, 2025', total: 179.00, status: 'Delivered', items: 1 },
-  { id: 'ORD-5901', date: 'Jan 10, 2025', total: 89.99, status: 'Delivered', items: 1 },
-];
+const STATUS_COLORS = {
+  Processing: '#f59e0b',
+  Shipped: '#3b82f6',
+  Delivered: 'var(--green)',
+  Cancelled: 'var(--red)',
+};
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -19,6 +21,18 @@ export default function Profile() {
   const { user } = useSelector(state => state.auth);
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
+
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    setOrdersLoading(true);
+    fetchUserOrders(user.uid)
+      .then(setOrders)
+      .catch(() => setOrders([]))
+      .finally(() => setOrdersLoading(false));
+  }, [user?.uid]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -31,7 +45,7 @@ export default function Profile() {
   const joinDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const STATS = [
-    { label: 'Orders Placed', value: ORDER_HISTORY.length, icon: Package },
+    { label: 'Orders Placed', value: ordersLoading ? '—' : orders.length, icon: Package },
     { label: 'Items in Cart', value: cartItems.reduce((s, i) => s + i.quantity, 0), icon: ShoppingCart },
     { label: 'Cart Value', value: `$${cartTotal.toFixed(2)}`, icon: ShoppingBag },
   ];
@@ -41,13 +55,11 @@ export default function Profile() {
       {/* Header */}
       <div className="glass-card animate-fade-in" style={{ padding: '32px', marginBottom: '24px', background: 'linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-          {/* Avatar */}
           <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 0 0 4px var(--accent-dim)' }}>
             <span style={{ fontSize: '28px', fontWeight: 800, color: '#080b0f', fontFamily: 'Syne' }}>
               {user.email?.[0]?.toUpperCase()}
             </span>
           </div>
-
           <div style={{ flex: 1 }}>
             <h1 style={{ fontSize: '26px', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '4px' }}>
               {user.displayName || 'Account'}
@@ -61,7 +73,6 @@ export default function Profile() {
               </span>
             </div>
           </div>
-
           <button onClick={handleLogout} className="btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <LogOut size={14} /> Sign Out
           </button>
@@ -92,7 +103,6 @@ export default function Profile() {
               View <ArrowRight size={12} />
             </Link>
           </div>
-
           {cartItems.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)', fontSize: '14px' }}>
               Your cart is empty.{' '}
@@ -112,33 +122,55 @@ export default function Profile() {
               {cartItems.length > 3 && <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>+{cartItems.length - 3} more items</div>}
               <Link to="/checkout">
                 <button className="btn-accent" style={{ width: '100%', marginTop: '8px', padding: '11px' }}>
-                  Checkout · ${cartTotal.toFixed(2)}
-                  <ArrowRight size={14} />
+                  Checkout · ${cartTotal.toFixed(2)} <ArrowRight size={14} />
                 </button>
               </Link>
             </>
           )}
         </div>
 
-        {/* Order history */}
+        {/* Order history — real from Firestore */}
         <div className="glass-card" style={{ padding: '24px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 800, fontFamily: 'Syne', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <Package size={16} color="var(--accent)" /> Order History
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {ORDER_HISTORY.map(order => (
-              <div key={order.id} style={{ padding: '12px 14px', borderRadius: '10px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, fontFamily: 'Syne', marginBottom: '2px' }}>{order.id}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{order.date} · {order.items} item{order.items !== 1 ? 's' : ''}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700 }}>${order.total.toFixed(2)}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--green)', fontWeight: 600 }}>{order.status}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+
+          {ordersLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px', gap: '8px', color: 'var(--text-muted)' }}>
+              <Loader2 size={16} color="var(--accent)" style={{ animation: 'spin 1s linear infinite' }} />
+              <span style={{ fontSize: '13px' }}>Loading orders...</span>
+            </div>
+          ) : orders.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '28px', color: 'var(--text-muted)', fontSize: '14px' }}>
+              <Package size={28} style={{ opacity: 0.3, marginBottom: '8px' }} />
+              <p>No orders yet.</p>
+              <Link to="/" style={{ color: 'var(--accent)', textDecoration: 'none', fontSize: '13px' }}>Start shopping</Link>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {orders.map(order => {
+                const date = order.createdAt?.toDate?.()?.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) || '—';
+                const itemCount = order.items?.reduce((s, i) => s + i.quantity, 0) || 0;
+                const statusColor = STATUS_COLORS[order.status] || 'var(--text-muted)';
+                return (
+                  <div key={order.id} style={{ padding: '12px 14px', borderRadius: '10px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, fontFamily: 'Syne', marginBottom: '2px', color: 'var(--text-primary)' }}>
+                        {order.id.slice(0, 8).toUpperCase()}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        {date} · {itemCount} item{itemCount !== 1 ? 's' : ''}
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '2px' }}>${parseFloat(order.total).toFixed(2)}</div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, color: statusColor }}>{order.status}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Account info */}
@@ -161,6 +193,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
