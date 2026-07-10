@@ -54,7 +54,7 @@ export default function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
           {!isAdmin && (
-            <Link to="/cart" style={{ position: 'relative', padding: '8px', display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'var(--text-secondary)', transition: 'color 0.2s' }}
+            <Link to="/cart" className="cart-icon" style={{ position: 'relative', padding: '8px', display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'var(--text-secondary)', transition: 'color 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
               onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
             >
@@ -89,8 +89,8 @@ export default function Navbar() {
             </div>
           ) : (
             <div style={{ display: 'flex', gap: '8px' }}>
-              <Link to="/login"><button className="btn-ghost" style={{ padding: '8px 16px', fontSize: '13px' }}>Login</button></Link>
-              <Link to="/signup"><button className="btn-accent" style={{ padding: '8px 16px', fontSize: '13px' }}>Sign Up</button></Link>
+              <Link to="/login"><button className="btn-ghost auth-btn" style={{ padding: '8px 16px', fontSize: '13px' }}>Login</button></Link>
+              <Link to="/signup"><button className="btn-accent auth-btn" style={{ padding: '8px 16px', fontSize: '13px' }}>Sign Up</button></Link>
             </div>
           )}
 
@@ -117,9 +117,12 @@ export default function Navbar() {
       <style>{`
         @media (max-width: 640px) {
           .desktop-nav { display: none !important; }
+          .cart-icon { display: none !important; }
+          .auth-btn { padding: 8px 8px !important; }
           #mobile-menu-btn { display: flex !important; }
         }
       `}</style>
     </nav>
   );
 }
+

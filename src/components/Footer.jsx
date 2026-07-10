@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
 
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-          <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>© 2025 Shopverse. All rights reserved.</span>
+          <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>© {new Date().getFullYear()} Shopverse. All rights reserved.</span>
           <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Built with React + Vite</span>
         </div>
       </div>
